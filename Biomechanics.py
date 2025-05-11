@@ -53,6 +53,15 @@ class Biomechanics:
     def get_stance(self):
         Lf, Lf_rf = zero_crossing(self.FP1_Z, 16, 0, self.n_rows-1)
         Rt, Rt_rf = zero_crossing(self.FP2_Z, 16, 0, self.n_rows-1)
+        i = 0
+        while (Lf[i] > Rt[i]) or (Lf_rf[i] != 'rising'):
+            i = i + 1
+        Lf = Lf[i]
+        Rt = Rt[i]
+        print(
+            'LF: ', Lf,
+            'RT: ', Rt
+        )
         if Lf[0] < Rt[0]:
             print('LON ', Lf[0])
             print('RON', Rt[0])
