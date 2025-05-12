@@ -59,25 +59,28 @@ class Biomechanics:
         #self.v3d = pd.DataFrame(data, columns=self.var_name)
 
     def get_stance(self):
-        Lf, Lf_rf = zero_crossing(self.FP1_Z, 16, 0, self.n_rows-1)
-        Rt, Rt_rf = zero_crossing(self.FP2_Z, 16, 0, self.n_rows-1)
-        i = 0
+        Lf, Lf_rf = zero_crossing(self.FP1_Z, 20, 0, self.n_rows - 1)
+        Rt, Rt_rf = zero_crossing(self.FP2_Z, 20, 0, self.n_rows - 1)
         # Find the First Step  LON must be less than RON
-        last_pt = len(Rt)
+        last_pt = len(Rt) - 1
         if Rt_rf[last_pt] == 'rising':
             last_pt = last_pt - 1
+        i = 0
+        step = 0
         while (Lf[i] > Rt[i]) and (Lf_rf[i] != 'rising'):
             i = i + 1
-        self.LON[0] = Lf[i]
-        if Lf[i] < Rt[i]:
-            self.RON[0] = Rt[i]
-        else:
-            self.RON[0] = Rt[i+1]
-        # Find the Last Step ROFF must be greater than LOFF
-        while Rt[last_pt] != 'falling':
-            last_pt = last_pt - 1
-        self.ROFF[0] = Rt[last_pt]
+        while i < last_pt - 1:
+            self.LON[step] = Lf[i]
+            self.LOFF[step] = Lf[i + 1]
+            self.RON[step] = Rt[i + 1]
+            self.ROFF[step] = Rt[i + 2]
+            i = i + 2
+            step = step + 1
 
+        # Find the Last Step ROFF must be greater than LOFF
+        #while Rt[last_pt] != 'falling':
+        #    last_pt = last_pt - 1
+        #self.ROFF[0] = Rt[last_pt]
 
     def plot_first_step(self):
         plt.plot(self.FP2_Z[Lf[0]:Rt[1]], 'r', label='FP2 Z')
