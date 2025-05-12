@@ -76,6 +76,9 @@ class Biomechanics:
             self.ROFF[step] = Rt[i + 2]
             i = i + 2
             step = step + 1
+            self.n_steps = step
+
+
 
         # Find the Last Step ROFF must be greater than LOFF
         #while Rt[last_pt] != 'falling':
@@ -88,6 +91,15 @@ class Biomechanics:
         plt.grid(True)
         plt.legend()
         plt.show()
+
+    def plot_fz_steps(self):
+        for i in range(self.n_steps):
+            plt.plot(self.FP1_Z[int(self.LON[i]):int(self.LOFF[i])], 'b', label='FP1 Z')
+            plt.plot(self.FP2_Z[int(self.RON[i]):int(self.ROFF[i])], 'r', label='FP2 Z')
+            plt.grid(True)
+            plt.title('Vertical Force Step ' + str(i))
+            plt.legend()
+            plt.show()
 
     def plot_fz(self):
         plt.plot(self.FP2_Z, 'r', label='FP2 Z')
