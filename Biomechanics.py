@@ -8,6 +8,14 @@ class Biomechanics:
     ROFF = np.zeros(50)
     LON = np.zeros(50)
     LOFF = np.zeros(50)
+    n_steps = 0
+    n_vars = 0
+    var_name = []
+    v3d = []
+    n_rows = 0
+    n_cols = 0
+    FP1_X = []
+    FP1_Y = []
 
     def __init__(self, filename):
         with open(filename) as f:
@@ -54,17 +62,22 @@ class Biomechanics:
         Lf, Lf_rf = zero_crossing(self.FP1_Z, 16, 0, self.n_rows-1)
         Rt, Rt_rf = zero_crossing(self.FP2_Z, 16, 0, self.n_rows-1)
         i = 0
-        while (Lf[i] > Rt[i]) or (Lf_rf[i] != 'rising'):
+        # Find the First Step  LON must be less than RON
+        last_pt = len(Rt)
+        if Rt_rf[last_pt] == 'rising':
+            last_pt = last_pt - 1
+        while (Lf[i] > Rt[i]) and (Lf_rf[i] != 'rising'):
             i = i + 1
-        Lf = Lf[i]
-        Rt = Rt[i]
-        print(
-            'LF: ', Lf,
-            'RT: ', Rt
-        )
-        if Lf[0] < Rt[0]:
-            print('LON ', Lf[0])
-            print('RON', Rt[0])
+        self.LON[0] = Lf[i]
+        if Lf[i] < Rt[i]:
+            self.RON[0] = Rt[i]
+        else:
+            self.RON[0] = Rt[i+1]
+        # Find the Last Step ROFF must be greater than LOFF
+        while Rt[last_pt] != 'falling':
+            last_pt = last_pt - 1
+        self.ROFF[0] = Rt[last_pt]
+
 
     def plot_first_step(self):
         plt.plot(self.FP2_Z[Lf[0]:Rt[1]], 'r', label='FP2 Z')
