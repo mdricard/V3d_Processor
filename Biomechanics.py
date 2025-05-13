@@ -82,8 +82,6 @@ class Biomechanics:
             step = step + 1
             self.n_steps = step
 
-
-
         # Find the Last Step ROFF must be greater than LOFF
         #while Rt[last_pt] != 'falling':
         #    last_pt = last_pt - 1
