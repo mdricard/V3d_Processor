@@ -72,8 +72,12 @@ class Biomechanics:
         while i < last_pt - 1:
             self.LON[step] = Lf[i]
             self.LOFF[step] = Lf[i + 1]
-            self.RON[step] = Rt[i + 1]
-            self.ROFF[step] = Rt[i + 2]
+            if Rt_rf[i + 1] == 'rising':
+                self.RON[step] = Rt[i + 1]
+                self.ROFF[step] = Rt[i + 2]
+            else:
+                self.RON[step] = Rt[i + 2]
+                self.ROFF[step] = Rt[i + 3]
             i = i + 2
             step = step + 1
             self.n_steps = step
@@ -98,6 +102,22 @@ class Biomechanics:
             plt.plot(self.FP2_Z[int(self.RON[i]):int(self.ROFF[i])], 'r', label='FP2 Z')
             plt.grid(True)
             plt.title('Vertical Force Step ' + str(i))
+            plt.legend()
+            plt.show()
+
+    def plot_joint_force(self):
+        for i in range(self.n_steps):
+            plt.plot(self.Rt_Knee_Jt_Force_Z[int(self.RON[i]):int(self.ROFF[i])], 'b', label='Rt Knee Jt Force Z')
+            plt.grid(True)
+            plt.title('Rt Knee Comp Force Step: ' + str(i))
+            plt.legend()
+            plt.show()
+
+    def plot_joint_moment(self):
+        for i in range(self.n_steps):
+            plt.plot(self.Rt_Knee_Jt_Moment_Y[int(self.RON[i]):int(self.ROFF[i])], 'r', label='Rt Knee Jt Moment Z')
+            plt.grid(True)
+            plt.title('Rt Knee Adduction Moment Step: ' + str(i))
             plt.legend()
             plt.show()
 
