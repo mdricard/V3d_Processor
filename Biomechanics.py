@@ -107,19 +107,19 @@ class Biomechanics:
 
     def plot_joint_force(self):
         for i in range(self.n_steps):
-            plt.plot(self.Rt_Knee_Jt_Force_Z[int(self.RON[i]):int(self.ROFF[i])], 'b', label='Rt Knee Jt Force Z')
+            plt.plot(self.Rt_Knee_Jt_Force_Z[int(self.RON[i]):int(self.ROFF[i])], label='Step ' + str(i))
             plt.grid(True)
-            plt.title('Rt Knee Comp Force Step: ' + str(i))
+            plt.title('Rt Knee Comp Force')
             plt.legend()
-            plt.show()
+        plt.show()
 
     def plot_joint_moment(self):
         for i in range(self.n_steps):
-            plt.plot(self.Rt_Knee_Jt_Moment_Y[int(self.RON[i]):int(self.ROFF[i])], 'r', label='Rt Knee Jt Moment Z')
+            plt.plot(self.Rt_Knee_Jt_Moment_Y[int(self.RON[i]):int(self.ROFF[i])], label='Step ' + str(i))
             plt.grid(True)
-            plt.title('Rt Knee Adduction Moment Step: ' + str(i))
+            plt.title('Rt Knee Adduction Moment')
             plt.legend()
-            plt.show()
+        plt.show()
 
     def plot_fz(self):
         plt.plot(self.FP2_Z, 'r', label='FP2 Z')
