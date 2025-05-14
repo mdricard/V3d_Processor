@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from Biomechanics import Biomechanics
 
-fn = 'D:/Alexis_Subject_27/S27 Neutral 08.txt'
+fn = 'D:/Alexis_Subject_27/S1 Data Test.txt'
 s_27_n_08 = Biomechanics(fn)
 s_27_n_08.get_stance()
 
