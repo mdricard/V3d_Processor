@@ -125,3 +125,12 @@ class Biomechanics:
         plt.grid(True)
         plt.legend()
         plt.show()
+
+    def save_stats_long(self, stat_file_path):
+        fn = stat_file_path + 'CT LONG.csv'
+        with open(fn, 'a') as stat_file:
+            #stat_file.write('subject,condition,Time Point,Rep,Peak Torque,Stiffness,Energy Absorbed,Energy Returned\n')
+            #for rep in range(self.n_reps):
+            #    stat_file.write(
+            #        self.subject + ',' + self.cond + ',' + self.time_pt + ',' + str(rep) + ',' + str(self.peak_torque[rep]) + ',' + str(self.stiffness[rep]) + ',' + str(self.energy_absorbed[rep]) + ',' + str(self.energy_returned[rep]) + '\n')
+        stat_file.close()
