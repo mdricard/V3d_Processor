@@ -8,6 +8,20 @@ class Biomechanics:
     ROFF = np.zeros(50)
     LON = np.zeros(50)
     LOFF = np.zeros(50)
+    peak_comp = np.zeros(50)
+    comp_impulse = np.zeros(50)
+    peak_add = np.zeros(50)
+    add_impulse = np.zeros(50)
+    trail_leg_prop = np.zeros(50)
+    lead_leg_braking = np.zeros(50)
+    hip_ron = np.zeros(50)
+    knee_ron = np.zeros(50)
+    knee_flex_range = np.zeros(50)
+    n_reps = 0
+    subject = ''
+    cond = ''
+    time_pt = ''
+    mass = 0
     n_steps = 0
     n_vars = 0
     var_name = []
@@ -49,9 +63,9 @@ class Biomechanics:
         self.Rt_Knee_Jt_Angle_X = data[:, 10]
         self.Rt_Knee_Jt_Angle_Y = data[:, 11]
         self.Rt_Knee_Jt_Angle_Z = data[:, 12]
-        self.Rt_Knee_Jt_Force_X = data[:, 13]
-        self.Rt_Knee_Jt_Force_Y = data[:, 14]
-        self.Rt_Knee_Jt_Force_Z = data[:, 15]
+        self.Rt_Knee_Jt_Force_X = data[:, 13] / (self.mass * 9.8)     # convert to BW
+        self.Rt_Knee_Jt_Force_Y = data[:, 14] / (self.mass * 9.8)     # convert to BW
+        self.Rt_Knee_Jt_Force_Z = data[:, 15] / (self.mass * 9.8)     # convert to BW
         self.Rt_Knee_Jt_Moment_X = data[:, 16]
         self.Rt_Knee_Jt_Moment_Y = data[:, 17]
         self.Rt_Knee_Jt_Moment_Z = data[:, 18]
@@ -59,7 +73,8 @@ class Biomechanics:
         #for i in range(1, self.n_cols):
         #    print(self.var_name[i])
         #self.n_steps = int(
-        #    (self.n_cols - 1) / 3 / self.n_vars)  # drop first col, divide by 3 (x,y,z) then divide by # variables in file
+        #    (self.n_cols - 1) / 3 / self.n_vars)
+        # drop first col, divide by 3 (x,y,z) then divide by # variables in file
         #self.v3d = pd.DataFrame(data, columns=self.var_name)
 
     def get_stance(self):
