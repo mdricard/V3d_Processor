@@ -17,7 +17,7 @@ class Biomechanics:
     FP1_X = []
     FP1_Y = []
 
-    def __init__(self, filename):
+    def __init__(self, filename, mass, height, speed, incline):
         with open(filename) as f:
             f.readline()  # skip first line
             self.var_name = f.readline().rstrip().split()
@@ -29,6 +29,10 @@ class Biomechanics:
             for i in range(0, len(self.var_name)):
                 self.var_name[i] = self.var_name[i] + '_' + xyz[i]
             self.var_name[0] = 'pt_num'
+            self.mass = mass
+            self.height = height
+            self.speed = speed
+            self.incline = incline
 
             data = np.genfromtxt(filename, delimiter='\t', skip_header=5)
         self.n_rows = data.shape[0]  # number of rows of array
@@ -126,11 +130,11 @@ class Biomechanics:
         plt.legend()
         plt.show()
 
-    def save_stats_long(self, stat_file_path):
-        fn = stat_file_path + 'CT LONG.csv'
-        with open(fn, 'a') as stat_file:
+    #def save_stats_long(self, stat_file_path):
+    #    fn = stat_file_path + 'CT LONG.csv'
+    #    with open(fn, 'a') as stat_file:
             #stat_file.write('subject,condition,Time Point,Rep,Peak Torque,Stiffness,Energy Absorbed,Energy Returned\n')
             #for rep in range(self.n_reps):
             #    stat_file.write(
             #        self.subject + ',' + self.cond + ',' + self.time_pt + ',' + str(rep) + ',' + str(self.peak_torque[rep]) + ',' + str(self.stiffness[rep]) + ',' + str(self.energy_absorbed[rep]) + ',' + str(self.energy_returned[rep]) + '\n')
-        stat_file.close()
+    #    stat_file.close()
