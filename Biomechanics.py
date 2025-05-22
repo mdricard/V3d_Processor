@@ -1,22 +1,22 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from math import degrees, asin
-from BiomechTools import low_pass, zero_crossing, max_min, simpson_nonuniform, critically_damped, residual_analysis
+from BiomechTools import low_pass, zero_crossing, max_min, simpson_nonuniform, critically_damped, residual_analysis, get_max_value, get_min_value
 
 class Biomechanics:
-    RON = np.zeros(50)
-    ROFF = np.zeros(50)
-    LON = np.zeros(50)
-    LOFF = np.zeros(50)
-    peak_comp = np.zeros(50)
-    comp_impulse = np.zeros(50)
-    peak_add = np.zeros(50)
-    add_impulse = np.zeros(50)
-    trail_leg_prop = np.zeros(50)
-    lead_leg_braking = np.zeros(50)
-    hip_ron = np.zeros(50)
-    knee_ron = np.zeros(50)
-    knee_flex_range = np.zeros(50)
+    RON = np.zeros(60, dtype=int)
+    ROFF = np.zeros(60, dtype=int)
+    LON = np.zeros(60, dtype=int)
+    LOFF = np.zeros(60, dtype=int)
+    peak_comp = np.zeros(60)
+    comp_impulse = np.zeros(60)
+    peak_add = np.zeros(60)
+    add_impulse = np.zeros(60)
+    trail_leg_prop = np.zeros(60)
+    lead_leg_braking = np.zeros(60)
+    hip_ron = np.zeros(60)
+    knee_ron = np.zeros(60)
+    knee_flex_range = np.zeros(60)
     n_reps = 0
     subject = ''
     cond = ''
@@ -31,7 +31,7 @@ class Biomechanics:
     FP1_X = []
     FP1_Y = []
 
-    def __init__(self, filename, mass, height, speed, incline):
+    def __init__(self, filename, subject, mass, height, speed, incline):
         with open(filename) as f:
             f.readline()  # skip first line
             self.var_name = f.readline().rstrip().split()
@@ -43,12 +43,13 @@ class Biomechanics:
             for i in range(0, len(self.var_name)):
                 self.var_name[i] = self.var_name[i] + '_' + xyz[i]
             self.var_name[0] = 'pt_num'
+            self.subject = subject
             self.mass = mass
             self.height = height
             self.speed = speed
             self.incline = incline
 
-            data = np.genfromtxt(filename, delimiter='\t', skip_header=5)
+            data = np.genfromtxt(filename, delimiter='\t', skip_header=7, skip_footer=2)
         self.n_rows = data.shape[0]  # number of rows of array
         self.n_cols = data.shape[1]
         self.FP1_X = data[:, 1]
@@ -88,7 +89,7 @@ class Biomechanics:
         step = 0
         while (Lf[i] > Rt[i]) and (Lf_rf[i] != 'rising'):
             i = i + 1
-        while i < last_pt - 1:
+        while i < last_pt - 2:
             self.LON[step] = Lf[i]
             self.LOFF[step] = Lf[i + 1]
             if Rt_rf[i + 1] == 'rising':
@@ -126,7 +127,7 @@ class Biomechanics:
         for i in range(self.n_steps):
             plt.plot(self.Rt_Knee_Jt_Force_Z[int(self.RON[i]):int(self.ROFF[i])], label='Step ' + str(i))
             plt.grid(True)
-            plt.title('Rt Knee Comp Force')
+            plt.title('Subject ' + str(self.subject) + ' ' + self.incline + ' ' + str(self.speed) + ' Rt Knee Comp Force')
             plt.legend()
         plt.show()
 
@@ -134,7 +135,15 @@ class Biomechanics:
         for i in range(self.n_steps):
             plt.plot(self.Rt_Knee_Jt_Moment_Y[int(self.RON[i]):int(self.ROFF[i])], label='Step ' + str(i))
             plt.grid(True)
-            plt.title('Rt Knee Adduction Moment')
+            plt.title('Subject ' + str(self.subject) + ' ' + self.incline + ' ' + str(self.speed) + ' Rt Knee Adduction Moment')
+            plt.legend()
+        plt.show()
+
+    def plot_joint_angle(self):
+        for i in range(self.n_steps):
+            plt.plot(self.Rt_Knee_Jt_Angle_X[self.RON[i]:self.ROFF[i]], label='Step ' + str(i))
+            plt.grid(True)
+            plt.title('Subject ' + str(self.subject) + ' ' + self.incline + ' ' + str(self.speed) + ' Rt Knee Angle')
             plt.legend()
         plt.show()
 
@@ -144,6 +153,10 @@ class Biomechanics:
         plt.grid(True)
         plt.legend()
         plt.show()
+
+    def analyze_joint_force(self):
+        for i in range(self.n_steps):
+            self.peak_comp[i] = get_min_value(self.Rt_Knee_Jt_Force_Z, self.RON[i], self.ROFF[i])
 
     #def save_stats_long(self, stat_file_path):
     #    fn = stat_file_path + 'CT LONG.csv'

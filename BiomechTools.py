@@ -27,6 +27,21 @@ def max_min(curve, first_pt, last_pt):
     return max, min, max_location, min_location
 
 
+def get_min_value(curve, first_pt, last_pt):
+    min_value = curve[first_pt]
+    for i in range(first_pt, last_pt):
+        if curve[i] < min_value:
+            min_value = curve[i]
+    return min_value
+
+def get_max_value(curve, first_pt, last_pt):
+    max_value = curve[first_pt]
+    for i in range(first_pt, last_pt):
+        if curve[i] > max_value:
+            max_value = curve[i]
+    return max_value
+
+
 def simpson_nonuniform(x: Sequence[float], f: Sequence[float]) -> float:
     """
     Simpson rule for irregularly spaced data.
