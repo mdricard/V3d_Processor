@@ -9,6 +9,7 @@ class Biomechanics:
     LON = np.zeros(60, dtype=int)
     LOFF = np.zeros(60, dtype=int)
     peak_comp = np.zeros(60)
+    peak_comp_pt = np.zeros(60)
     comp_impulse = np.zeros(60)
     peak_add = np.zeros(60)
     add_impulse = np.zeros(60)
@@ -53,10 +54,10 @@ class Biomechanics:
         self.n_rows = data.shape[0]  # number of rows of array
         self.n_cols = data.shape[1]
         self.FP1_X = data[:, 1]
-        self.FP1_Y = data[:, 2]
+        self.FP1_Y = data[:, 2] / (self.mass * 9.8)     # convert to BW
         self.FP1_Z = data[:, 3]
         self.FP2_X = data[:, 4]
-        self.FP2_Y = data[:, 5]
+        self.FP2_Y = data[:, 5] / (self.mass * 9.8)     # convert to BW
         self.FP2_Z = data[:, 6]
         self.R_HIP_Jt_Angle_X = data[:, 7]
         self.R_HIP_Jt_Angle_Y = data[:, 8]
@@ -70,6 +71,14 @@ class Biomechanics:
         self.Rt_Knee_Jt_Moment_X = data[:, 16]
         self.Rt_Knee_Jt_Moment_Y = data[:, 17]
         self.Rt_Knee_Jt_Moment_Z = data[:, 18]
+
+        # smooth Forces at 20 Hz
+        self.FP1_X = critically_damped(self.FP1_X, 1000, 20)
+        self.FP1_Y = critically_damped(self.FP1_Y, 1000, 20)
+        self.FP1_Z = critically_damped(self.FP1_Z, 1000, 20)
+        self.FP2_X = critically_damped(self.FP2_X, 1000, 20)
+        self.FP2_Y = critically_damped(self.FP2_Y, 1000, 20)
+        self.FP2_Z = critically_damped(self.FP2_Z, 1000, 20)
 
         #for i in range(1, self.n_cols):
         #    print(self.var_name[i])
@@ -123,6 +132,15 @@ class Biomechanics:
             plt.legend()
             plt.show()
 
+    def plot_left_fy(self):
+        for i in range(self.n_steps):
+            plt.plot(self.FP1_Y[int(self.LON[i]):int(self.LOFF[i])], 'b', label='FP1 Y')
+            #plt.plot(self.FP2_Z[int(self.RON[i]):int(self.ROFF[i])], 'r', label='FP2 Z')
+            plt.grid(True)
+            plt.title('Left Leg A/P Force (BW) ' + str(i))
+            plt.legend()
+            plt.show()
+
     def plot_joint_force(self):
         for i in range(self.n_steps):
             plt.plot(self.Rt_Knee_Jt_Force_Z[int(self.RON[i]):int(self.ROFF[i])], label='Step ' + str(i))
@@ -130,6 +148,16 @@ class Biomechanics:
             plt.title('Subject ' + str(self.subject) + ' ' + self.incline + ' ' + str(self.speed) + ' Rt Knee Comp Force')
             plt.legend()
         plt.show()
+
+
+    def plot_shear_force(self):
+        for i in range(self.n_steps):
+            plt.plot(self.Rt_Knee_Jt_Force_Y[int(self.RON[i]):int(self.ROFF[i])], label='Step ' + str(i))
+            plt.grid(True)
+            plt.title('Subject ' + str(self.subject) + ' ' + self.incline + ' ' + str(self.speed) + ' Rt Knee Shear Force')
+            plt.legend()
+        plt.show()
+
 
     def plot_joint_moment(self):
         for i in range(self.n_steps):
@@ -156,7 +184,7 @@ class Biomechanics:
 
     def analyze_joint_force(self):
         for i in range(self.n_steps):
-            self.peak_comp[i] = get_min_value(self.Rt_Knee_Jt_Force_Z, self.RON[i], self.ROFF[i])
+            self.peak_comp[i], self.peak_comp_pt[i] = get_min_value(self.Rt_Knee_Jt_Force_Z, self.RON[i], self.ROFF[i])
 
     #def save_stats_long(self, stat_file_path):
     #    fn = stat_file_path + 'CT LONG.csv'

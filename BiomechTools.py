@@ -29,10 +29,12 @@ def max_min(curve, first_pt, last_pt):
 
 def get_min_value(curve, first_pt, last_pt):
     min_value = curve[first_pt]
+    min_pt = first_pt
     for i in range(first_pt, last_pt):
         if curve[i] < min_value:
             min_value = curve[i]
-    return min_value
+            min_pt = i
+    return min_value, min_pt - first_pt
 
 def get_max_value(curve, first_pt, last_pt):
     max_value = curve[first_pt]
