@@ -1,12 +1,15 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from math import degrees, asin
-from BiomechTools import low_pass, zero_crossing, max_min, simpson_nonuniform, critically_damped, residual_analysis, get_max_value, get_min_value
+from BiomechTools import low_pass, zero_crossing, max_min, simpsons_rule, critically_damped, residual_analysis, get_max_value, get_min_value
 
 class Biomechanics:
     RON = np.zeros(60, dtype=int)
     ROFF = np.zeros(60, dtype=int)
     LON = np.zeros(60, dtype=int)
+    LMID = np.zeros(60, dtype=int)  # start of propulsion for left leg
+    LOFF = np.zeros(60, dtype=int)
+    RMID = np.zeros(60, dtype=int)
     LOFF = np.zeros(60, dtype=int)
     peak_comp = np.zeros(60)
     peak_comp_pt = np.zeros(60)
@@ -54,10 +57,10 @@ class Biomechanics:
         self.n_rows = data.shape[0]  # number of rows of array
         self.n_cols = data.shape[1]
         self.FP1_X = data[:, 1]
-        self.FP1_Y = data[:, 2] / (self.mass * 9.8)     # convert to BW
+        self.FP1_Y = -1.0 * data[:, 2] / (self.mass * 9.8)     # convert to BW
         self.FP1_Z = data[:, 3]
         self.FP2_X = data[:, 4]
-        self.FP2_Y = data[:, 5] / (self.mass * 9.8)     # convert to BW
+        self.FP2_Y = -1.0 * data[:, 5] / (self.mass * 9.8)     # convert to BW
         self.FP2_Z = data[:, 6]
         self.R_HIP_Jt_Angle_X = data[:, 7]
         self.R_HIP_Jt_Angle_Y = data[:, 8]
@@ -111,10 +114,13 @@ class Biomechanics:
             step = step + 1
             self.n_steps = step
 
-        # Find the Last Step ROFF must be greater than LOFF
-        #while Rt[last_pt] != 'falling':
-        #    last_pt = last_pt - 1
-        #self.ROFF[0] = Rt[last_pt]
+        # Find the start of propulsion for left leg
+        for step in range(self.n_steps):
+            k = self.LON[step] + 100    # skip first 100 pts
+            while self.FP1_Y[k] < 0.0 and k < self.LOFF[step]:
+                k = k + 1
+            self.LMID[step] = k
+
 
     def plot_first_step(self):
         plt.plot(self.FP2_Z[Lf[0]:Rt[1]], 'r', label='FP2 Z')
@@ -135,9 +141,11 @@ class Biomechanics:
     def plot_left_fy(self):
         for i in range(self.n_steps):
             plt.plot(self.FP1_Y[int(self.LON[i]):int(self.LOFF[i])], 'b', label='FP1 Y')
+            plt.vlines(self.LMID[i] - self.LON[i], -.4, .4, colors='red', linestyles='dotted')
             #plt.plot(self.FP2_Z[int(self.RON[i]):int(self.ROFF[i])], 'r', label='FP2 Z')
             plt.grid(True)
             plt.title('Left Leg A/P Force (BW) ' + str(i))
+            print(self.LON[i], self.LMID[i], self.LOFF[i])
             plt.legend()
             plt.show()
 
@@ -185,6 +193,12 @@ class Biomechanics:
     def analyze_joint_force(self):
         for i in range(self.n_steps):
             self.peak_comp[i], self.peak_comp_pt[i] = get_min_value(self.Rt_Knee_Jt_Force_Z, self.RON[i], self.ROFF[i])
+            self.comp_impulse[i] = simpsons_rule(self.Rt_Knee_Jt_Force_Z, self.RON[i], self.peak_comp_pt[i], 0.001)
+            self.trail_leg_prop[i] = simpsons_rule(self.FP1_Y, self.LMID[i], self.LOFF[i], 0.001)
+            self.lead_leg_braking[i] = simpsons_rule(self.FP2_Y, self.RON[i], self.peak_comp_pt[i], 0.001)
+            self.hip_ron[i] = self.R_HIP_Jt_Angle_X[self.RON[i]]
+            self.knee_ron[i] = self.Rt_Knee_Jt_Angle_X[self.RON[i]]
+            self.knee_flex_range[i] = self.Rt_Knee_Jt_Angle_X[self.peak_comp_pt[i]] - self.knee_ron[i] - self.hip_ron[i]
 
     #def save_stats_long(self, stat_file_path):
     #    fn = stat_file_path + 'CT LONG.csv'
