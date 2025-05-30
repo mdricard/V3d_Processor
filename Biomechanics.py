@@ -196,7 +196,7 @@ class Biomechanics:
             plt.grid(True)
             plt.title('Subject ' + str(self.subject) + ' ' + self.incline + ' ' + str(self.speed) + ' Rt Knee Adduction Moment')
             plt.legend()
-        plt.show()
+            plt.show()
 
     def plot_joint_angle(self):
         for i in range(self.n_steps):
@@ -225,7 +225,7 @@ class Biomechanics:
         d = self.FP2_Z[self.LON[step] : self.ROFF[step]]
         e = self.Rt_Knee_Jt_Force_Y[self.LON[step] : self.ROFF[step]]
         f = self.Rt_Knee_Jt_Force_Z[self.LON[step] : self.ROFF[step]]
-        g = self.Rt_Knee_Jt_Moment_X[self.LON[step]: self.ROFF[step]]
+        g = self.Rt_Knee_Jt_Moment_Y[self.LON[step]: self.ROFF[step]]
 
         np.savetxt(f_step_name, np.column_stack((a, b, c, d, e, f, g)),  fmt='%.6f', delimiter=',', newline='\n', header="fp1 Y, fp1 Z, fp2 Y, fp2 Z, Rt Knee Force Y, Rt Knee Force Z, Rt Knee Adduction Moment X", comments="")
 
@@ -234,8 +234,8 @@ class Biomechanics:
         for i in range(self.n_steps):
             self.peak_comp[i], self.peak_comp_pt[i] = get_min_value(self.Rt_Knee_Jt_Force_Z, self.RON[i], self.RMID[i])
             self.comp_impulse[i] = simpsons_rule(self.Rt_Knee_Jt_Force_Z, self.RON[i], self.peak_comp_pt[i], 1.0)
-            self.peak_add[i], self.peak_add_pt[i] = get_min_value(self.Rt_Knee_Jt_Moment_X, self.RON[i], self.RMID[i])
-            self.add_impulse[i] = simpsons_rule(self.Rt_Knee_Jt_Moment_X, self.RON[i], self.peak_add_pt[i], 1.0)
+            self.peak_add[i], self.peak_add_pt[i] = get_min_value(self.Rt_Knee_Jt_Moment_Y, self.RON[i], self.RMID[i])
+            self.add_impulse[i] = simpsons_rule(self.Rt_Knee_Jt_Moment_Y, self.RON[i], self.peak_add_pt[i], 1.0)
             self.peak_shear[i], self.peak_shear_pt[i] = get_max_value(self.Rt_Knee_Jt_Force_Y, self.RON[i], self.RMID[i])
             self.shear_impulse[i] = simpsons_rule(self.Rt_Knee_Jt_Force_Y, self.RON[i], self.peak_shear_pt[i], 1.0)
             self.trail_leg_prop[i] = simpsons_rule(self.FP1_Y, self.LMID[i], self.LOFF[i], 1.0)
