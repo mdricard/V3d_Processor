@@ -40,7 +40,7 @@ class Biomechanics:
     FP1_X = []
     FP1_Y = []
 
-    def __init__(self, filename, subject, mass, height, speed, incline):
+    def __init__(self, filename, subject, mass, height, speed, incline, shoe):
         with open(filename) as f:
             f.readline()  # skip first line
             self.var_name = f.readline().rstrip().split()
@@ -57,8 +57,8 @@ class Biomechanics:
             self.height = height
             self.speed = speed
             self.incline = incline
-
-            data = np.genfromtxt(filename, delimiter='\t', skip_header=7, skip_footer=2)
+            self.shoe = shoe
+        data = np.genfromtxt(filename, delimiter='\t', skip_header=7, skip_footer=2)
         self.n_rows = data.shape[0]  # number of rows of array
         self.n_cols = data.shape[1]
         self.FP1_X = data[:, 1]
@@ -227,12 +227,15 @@ class Biomechanics:
             self.hip_ron[i] = self.R_HIP_Jt_Angle_X[self.RON[i]]
             self.knee_ron[i] = self.Rt_Knee_Jt_Angle_X[self.RON[i]]
             self.knee_flex_range[i] = self.Rt_Knee_Jt_Angle_X[self.peak_comp_pt[i]] - self.knee_ron[i] - self.hip_ron[i]
+        stat_file_path = 'D:/Alexis_Stats'
+        self.save_stats_long(stat_file_path)
 
-    #def save_stats_long(self, stat_file_path):
-    #    fn = stat_file_path + 'CT LONG.csv'
-    #    with open(fn, 'a') as stat_file:
-            #stat_file.write('subject,condition,Time Point,Rep,Peak Torque,Stiffness,Energy Absorbed,Energy Returned\n')
-            #for rep in range(self.n_reps):
-            #    stat_file.write(
-            #        self.subject + ',' + self.cond + ',' + self.time_pt + ',' + str(rep) + ',' + str(self.peak_torque[rep]) + ',' + str(self.stiffness[rep]) + ',' + str(self.energy_absorbed[rep]) + ',' + str(self.energy_returned[rep]) + '\n')
-    #    stat_file.close()
+
+    def save_stats_long(self, stat_file_path):
+        fn = stat_file_path + 'Alexis_Stats.csv'
+        with open(fn, 'a') as stat_file:
+            stat_file.write('subject, shoe,speed, incline, step, comp_force,comp_impulse,shear_force,shear_impulse,add_mom, add_impulse, trail_prop, lead_braking, hip_ron, knee_ron\n')
+            for step in range(self.n_steps):
+                stat_file.write(
+                    self.subject + ',' + self.shoe  + ',' + self.speed + ',' + self.incline + ',' + str(step) + ',' + str(self.peak_comp[step]) + ',' + str(self.comp_impulse[step]) + ',' + str(self.peak_shear[step]) + ',' + str(self.shear_impulse[step]) + ',' + str(self.peak_add[step]) + ',' + str(self.add_impulse[step]) + ',' + str(self.trail_leg_prop[step]) + ',' + str(self.lead_leg_braking[step]) + ',' + str(self.hip_ron[step]) + ',' + str(self.knee_ron[step]) + '\n')
+        stat_file.close()
