@@ -34,14 +34,16 @@ def get_min_value(curve, first_pt, last_pt):
         if curve[i] < min_value:
             min_value = curve[i]
             min_pt = i
-    return min_value, min_pt - first_pt
+    return min_value, min_pt
 
 def get_max_value(curve, first_pt, last_pt):
     max_value = curve[first_pt]
+    max_pt = first_pt
     for i in range(first_pt, last_pt):
         if curve[i] > max_value:
             max_value = curve[i]
-    return max_value
+            max_pt = i
+    return max_value, max_pt
 
 
 def simpson_nonuniform(x: Sequence[float], f: Sequence[float]) -> float:

@@ -8,13 +8,18 @@ class Biomechanics:
     ROFF = np.zeros(60, dtype=int)
     LON = np.zeros(60, dtype=int)
     LMID = np.zeros(60, dtype=int)  # start of propulsion for left leg
+    RMID = np.zeros(60, dtype=int)
     LOFF = np.zeros(60, dtype=int)
     RMID = np.zeros(60, dtype=int)
     LOFF = np.zeros(60, dtype=int)
     peak_comp = np.zeros(60)
     peak_comp_pt = np.zeros(60, dtype=int)
+    peak_shear = np.zeros(60)
+    peak_shear_pt = np.zeros(60, dtype=int)
     comp_impulse = np.zeros(60)
+    shear_impulse = np.zeros(60)
     peak_add = np.zeros(60)
+    peak_add_pt = np.zeros(60, dtype=int)
     add_impulse = np.zeros(60)
     trail_leg_prop = np.zeros(60)
     lead_leg_braking = np.zeros(60)
@@ -121,6 +126,12 @@ class Biomechanics:
                 k = k + 1
             self.LMID[step] = k
 
+        # Find the start of propulsion for right leg
+        for step in range(self.n_steps):
+            k = self.RON[step] + 100    # skip first 100 pts
+            while self.FP2_Y[k] < 0.0 and k < self.ROFF[step]:
+                k = k + 1
+            self.RMID[step] = k
 
     def plot_first_step(self):
         plt.plot(self.FP2_Z[Lf[0]:Rt[1]], 'r', label='FP2 Z')
@@ -152,11 +163,11 @@ class Biomechanics:
     def plot_right_fy(self):
         for i in range(self.n_steps):
             plt.plot(self.FP2_Y[int(self.RON[i]):int(self.ROFF[i])], 'b', label='FP2 Y')
-            plt.vlines(self.peak_comp_pt[i], -.4, .4, colors='red', linestyles='dotted')
+            plt.vlines(self.RMID[i] - self.RON[i], -.4, .4, colors='red', linestyles='dotted')
             #plt.plot(self.FP2_Z[int(self.RON[i]):int(self.ROFF[i])], 'r', label='FP2 Z')
             plt.grid(True)
             plt.title('Right Leg A/P Force (BW) ' + str(i))
-            print(self.RON[i], self.peak_comp_pt[i], self.ROFF[i])
+            print(self.RON[i], self.RMID[i], self.ROFF[i])
             plt.legend()
             plt.show()
 
@@ -165,7 +176,7 @@ class Biomechanics:
             plt.plot(self.Rt_Knee_Jt_Force_Z[int(self.RON[i]):int(self.ROFF[i])], label='Step ' + str(i))
             plt.grid(True)
             plt.title('Subject ' + str(self.subject) + ' ' + self.incline + ' ' + str(self.speed) + ' Rt Knee Comp Force')
-            plt.vlines(self.peak_comp_pt[i], -.4, .4, colors='red', linestyles='dotted')
+            plt.vlines(self.peak_comp_pt[i], -1.0, 0, colors='red', linestyles='dotted')
             plt.legend()
             plt.show()
 
@@ -204,10 +215,15 @@ class Biomechanics:
 
     def analyze_joint_force(self):
         for i in range(self.n_steps):
-            self.peak_comp[i], self.peak_comp_pt[i] = get_min_value(self.Rt_Knee_Jt_Force_Z, self.RON[i], self.ROFF[i])
-            self.comp_impulse[i] = simpsons_rule(self.Rt_Knee_Jt_Force_Z, self.RON[i], self.peak_comp_pt[i], 0.001)
-            self.trail_leg_prop[i] = simpsons_rule(self.FP1_Y, self.LMID[i], self.LOFF[i], 0.001)
-            self.lead_leg_braking[i] = simpsons_rule(self.FP2_Y, self.RON[i], self.peak_comp_pt[i], 0.001)
+            self.peak_comp[i], self.peak_comp_pt[i] = get_min_value(self.Rt_Knee_Jt_Force_Z, self.RON[i], self.RMID[i])
+            self.comp_impulse[i] = simpsons_rule(self.Rt_Knee_Jt_Force_Z, self.RON[i],
+                                                 self.RON[i] + self.peak_comp_pt[i], 1.0)
+            self.peak_add[i], self.peak_add_pt[i] = get_min_value(self.Rt_Knee_Jt_Moment_X, self.RON[i], self.RMID[i])
+            self.add_impulse[i] = simpsons_rule(self.Rt_Knee_Jt_Moment_X, self.RON[i], self.RON[i] + self.peak_add_pt[i], 1.0)
+            self.peak_shear[i], self.peak_shear_pt[i] = get_max_value(self.Rt_Knee_Jt_Force_Y, self.RON[i], self.RMID[i])
+            self.shear_impulse[i] = simpsons_rule(self.Rt_Knee_Jt_Force_Y, self.RON[i], self.peak_shear_pt[i], 1.0)
+            self.trail_leg_prop[i] = simpsons_rule(self.FP1_Y, self.LMID[i], self.LOFF[i], 1.0)
+            self.lead_leg_braking[i] = simpsons_rule(self.FP2_Y, self.RON[i], self.peak_comp_pt[i], 1.0)
             self.hip_ron[i] = self.R_HIP_Jt_Angle_X[self.RON[i]]
             self.knee_ron[i] = self.Rt_Knee_Jt_Angle_X[self.RON[i]]
             self.knee_flex_range[i] = self.Rt_Knee_Jt_Angle_X[self.peak_comp_pt[i]] - self.knee_ron[i] - self.hip_ron[i]
