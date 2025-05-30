@@ -213,6 +213,23 @@ class Biomechanics:
         plt.legend()
         plt.show()
 
+    def save_a_step(self, step):
+        f_step_name = 'd:/step_' + str(step) + '.csv'
+        #with open(f_step_name) as f:
+        #    #f.write('pt, fy1, fz1, fy2, fz2, knee force y, knee force z, add mom, \n')
+        #    for i in range(self.LON[step], self.ROFF[step]):
+        #        f.write(str(i) + ',' + str(self.FP1_Y[i]) + ',' + str(self.FP1_Z[i]) + ',' + str(self.FP2_Y[i]) + ',' + str(self.FP2_Z[i]) + ',' + str(self.Rt_Knee_Jt_Force_Y[i]) + ',' + str(self.Rt_Knee_Jt_Force_Z[i]) + ',' + str(self.Rt_Knee_Jt_Moment_X[i]) + '\n')
+        a = self.FP1_Y[self.LON[step] : self.ROFF[step]]
+        b = self.FP1_Z[self.LON[step] : self.ROFF[step]]
+        c = self.FP2_Y[self.LON[step] : self.ROFF[step]]
+        d = self.FP2_Z[self.LON[step] : self.ROFF[step]]
+        e = self.Rt_Knee_Jt_Force_Y[self.LON[step] : self.ROFF[step]]
+        f = self.Rt_Knee_Jt_Force_Z[self.LON[step] : self.ROFF[step]]
+        g = self.Rt_Knee_Jt_Moment_X[self.LON[step]: self.ROFF[step]]
+
+        np.savetxt(f_step_name, np.column_stack((a, b, c, d, e, f, g)),  fmt='%.6f', delimiter=',', newline='\n', header="fp1 Y, fp1 Z, fp2 Y, fp2 Z, Rt Knee Force Y, Rt Knee Force Z, Rt Knee Adduction Moment X", comments="")
+
+
     def analyze_joint_force(self):
         for i in range(self.n_steps):
             self.peak_comp[i], self.peak_comp_pt[i] = get_min_value(self.Rt_Knee_Jt_Force_Z, self.RON[i], self.RMID[i])
