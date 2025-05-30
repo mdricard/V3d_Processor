@@ -12,7 +12,7 @@ class Biomechanics:
     RMID = np.zeros(60, dtype=int)
     LOFF = np.zeros(60, dtype=int)
     peak_comp = np.zeros(60)
-    peak_comp_pt = np.zeros(60)
+    peak_comp_pt = np.zeros(60, dtype=int)
     comp_impulse = np.zeros(60)
     peak_add = np.zeros(60)
     add_impulse = np.zeros(60)
@@ -149,13 +149,25 @@ class Biomechanics:
             plt.legend()
             plt.show()
 
+    def plot_right_fy(self):
+        for i in range(self.n_steps):
+            plt.plot(self.FP2_Y[int(self.RON[i]):int(self.ROFF[i])], 'b', label='FP2 Y')
+            plt.vlines(self.peak_comp_pt[i], -.4, .4, colors='red', linestyles='dotted')
+            #plt.plot(self.FP2_Z[int(self.RON[i]):int(self.ROFF[i])], 'r', label='FP2 Z')
+            plt.grid(True)
+            plt.title('Right Leg A/P Force (BW) ' + str(i))
+            print(self.RON[i], self.peak_comp_pt[i], self.ROFF[i])
+            plt.legend()
+            plt.show()
+
     def plot_joint_force(self):
         for i in range(self.n_steps):
             plt.plot(self.Rt_Knee_Jt_Force_Z[int(self.RON[i]):int(self.ROFF[i])], label='Step ' + str(i))
             plt.grid(True)
             plt.title('Subject ' + str(self.subject) + ' ' + self.incline + ' ' + str(self.speed) + ' Rt Knee Comp Force')
+            plt.vlines(self.peak_comp_pt[i], -.4, .4, colors='red', linestyles='dotted')
             plt.legend()
-        plt.show()
+            plt.show()
 
 
     def plot_shear_force(self):
