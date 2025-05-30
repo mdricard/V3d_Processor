@@ -215,10 +215,6 @@ class Biomechanics:
 
     def save_a_step(self, step):
         f_step_name = 'd:/step_' + str(step) + '.csv'
-        #with open(f_step_name) as f:
-        #    #f.write('pt, fy1, fz1, fy2, fz2, knee force y, knee force z, add mom, \n')
-        #    for i in range(self.LON[step], self.ROFF[step]):
-        #        f.write(str(i) + ',' + str(self.FP1_Y[i]) + ',' + str(self.FP1_Z[i]) + ',' + str(self.FP2_Y[i]) + ',' + str(self.FP2_Z[i]) + ',' + str(self.Rt_Knee_Jt_Force_Y[i]) + ',' + str(self.Rt_Knee_Jt_Force_Z[i]) + ',' + str(self.Rt_Knee_Jt_Moment_X[i]) + '\n')
         a = self.FP1_Y[self.LON[step] : self.ROFF[step]]
         b = self.FP1_Z[self.LON[step] : self.ROFF[step]]
         c = self.FP2_Y[self.LON[step] : self.ROFF[step]]
