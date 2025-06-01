@@ -1,12 +1,12 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from Biomechanics import Biomechanics
+
+#  --------- Alexis input Subject #, mass and height ------------
 mass = 73.482
 height = 1.64592
-#speed = 1.2
-#incline = 'DH'
 subject = 8
-#shoe = 'HK'
+#  --------------------------------------------------------------
 path = 'D:/Alexis_Subject_' + str(subject) + '/S' + str(subject) + ' Data/'
 for speed in range(3):
     for incline in range(3):
