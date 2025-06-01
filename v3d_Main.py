@@ -40,6 +40,7 @@ for speed in range(3):
 
 
 """
+
 fn = 'D:/Alexis_Subject_' + str(subject) + '/S' + str(subject) + ' Data/'
 s_7 = Biomechanics(fn, subject, mass, height, speed=0, incline=0, shoe=0)
 s_7.get_stance()

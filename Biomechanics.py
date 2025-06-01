@@ -267,7 +267,6 @@ class Biomechanics:
             self.knee_ron[i] = self.Rt_Knee_Jt_Angle_X[self.RON[i]]
             self.knee_flex_range[i] = self.Rt_Knee_Jt_Angle_X[self.peak_comp_pt[i]] - self.knee_ron[i] - self.hip_ron[i]
 
-
     def save_stats_long(self):
         stat_file_path = 'D:/Alexis_Stats/'
         fn = stat_file_path + 'Alexis_Stats.csv'

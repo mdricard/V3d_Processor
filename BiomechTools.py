@@ -3,6 +3,7 @@ import numpy as np
 import math
 import matplotlib.pyplot as plt
 
+
 def next_power_of_two(n_points):
     """ returns the next power of 2 for FFT, n_points is n the number of points. If n_points is 10, the function
     returns 16.
@@ -475,6 +476,7 @@ def critically_damped(raw, sampling_rate, filter_cutoff):
     for i in range((n + 1), -1, -1):
         prime[i] = a0 * temp[i] + a1 * temp[i + 1] + a2 * \
                    temp[i + 2] + b1 * prime[i + 1] + b2 * prime[i + 2]
+
 
     # --------------------------------------------------------------
     #                           Pass 5
