@@ -28,8 +28,6 @@ class Biomechanics:
     knee_flex_range = np.zeros(60)
     n_reps = 0
     subject = ''
-    cond = ''
-    time_pt = ''
     mass = 0
     n_steps = 0
     n_vars = 0
@@ -249,6 +247,6 @@ class Biomechanics:
             stat_file.write('subject, shoe,speed, incline, step, comp_force,comp_impulse,shear_force,shear_impulse,add_mom, add_impulse, trail_prop, lead_braking, hip_ron, knee_ron\n')
             for step in range(self.n_steps):
                 stat_file.write(
-                    str(self.subject) + ',' + self.shoe  + ',' + str(self.speed) + ',' + self.incline + ',' + str(step) + ',' + str(self.peak_comp[step]) + ',' + str(self.comp_impulse[step]) + ',' + str(self.peak_shear[step]) + ',' + str(self.shear_impulse[step]) + ',' + str(self.peak_add[step]) + ',' + str(self.add_impulse[step]) + ',' + str(self.trail_leg_prop[step]) + ',' + str(self.lead_leg_braking[step]) + ',' + str(self.hip_ron[step]) + ',' + str(self.knee_ron[step]) + '\n')
+                    str(self.subject) + ',' + str(self.shoe)  + ',' + str(self.speed) + ',' + str(self.incline) + ',' + str(step) + ',' + str(self.peak_comp[step]) + ',' + str(self.comp_impulse[step]) + ',' + str(self.peak_shear[step]) + ',' + str(self.shear_impulse[step]) + ',' + str(self.peak_add[step]) + ',' + str(self.add_impulse[step]) + ',' + str(self.trail_leg_prop[step]) + ',' + str(self.lead_leg_braking[step]) + ',' + str(self.hip_ron[step]) + ',' + str(self.knee_ron[step]) + '\n')
         stat_file.close()
         print('Stats saved to ' + fn)

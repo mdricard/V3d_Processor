@@ -25,11 +25,16 @@ for speed in range(3):
                 incline_str = 'DH'
             if shoe == 0:
                 shoe_str = 'HK'
+                filename = 'S' + str(subject) + ' ' + shoe_str + ' ' + incline_str + ' ' + speed_str + '.txt'
             else:
-                shoe_str = 'Barefoot'
-            filename = path + 'S' + str(subject) + ' ' + shoe_str + ' ' + incline_str + ' ' + speed_str + '.txt'
+                shoe_str = ''
+                filename = 'S' + str(subject) + shoe_str + ' ' + incline_str + ' ' + speed_str + '.txt'
             fn = path + filename
-            print('Speed ' + speed_str + ' Incline ' + incline_str + ' Shoe ' + shoe_str + ' File ' + filename)
+            #print('Speed ' + speed_str + ' Incline ' + incline_str + ' Shoe ' + shoe_str + ' File ' + filename)
+            subj = Biomechanics(fn, subject, mass, height, speed, incline, shoe)
+            subj.get_stance()
+            subj.analyze_joint_force()
+
 """
 s_7 = Biomechanics(fn, subject, mass, height, speed, incline, shoe)
 s_7.get_stance()
