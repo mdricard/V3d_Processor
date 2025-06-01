@@ -12,6 +12,13 @@ class Biomechanics:
     LOFF = np.zeros(60, dtype=int)
     RMID = np.zeros(60, dtype=int)
     LOFF = np.zeros(60, dtype=int)
+    speed_str = ''
+    incline_str = ''
+    shoe_str = ''
+    height = 0
+    speed = 0
+    incline = 0
+    shoe = 0
     peak_comp = np.zeros(60)
     peak_comp_pt = np.zeros(60, dtype=int)
     peak_shear = np.zeros(60)
@@ -169,30 +176,52 @@ class Biomechanics:
             plt.legend()
             plt.show()
 
+    def get_plot_titletext(self):
+        if self.speed == 0:
+            self.speed_str = '05 '
+        elif self.speed == 1:
+            self.speed_str = '08 '
+        else:
+            self.speed_str = '12 '
+        if self.incline == 0:
+            self.incline_str = 'Neutral '
+        elif self.incline == 1:
+            self.incline_str = 'UH '
+        else:
+            self.incline_str = 'DH '
+        if self.shoe == 0:
+            self.shoe_str = 'HK '
+        else:
+            self.shoe_str = 'Barefoot '
+
+
     def plot_joint_force(self):
+        self.get_plot_titletext()
         for i in range(self.n_steps):
             plt.plot(self.Rt_Knee_Jt_Force_Z[int(self.RON[i]):int(self.ROFF[i])], label='Step ' + str(i))
             plt.grid(True)
-            plt.title('Subject ' + str(self.subject) + ' ' + self.incline + ' ' + str(self.speed) + ' Rt Knee Comp Force')
-            plt.vlines(self.peak_comp_pt[i], -1.0, 0, colors='red', linestyles='dotted')
+            plt.title('Subject ' + str(self.subject) + ' ' + self.shoe_str + self.incline_str + ' ' + self.speed_str + ' Rt Knee Comp Force')
+            #plt.vlines(self.peak_comp_pt[i], -1.0, 0, colors='red', linestyles='dotted')
             plt.legend()
-            plt.show()
+        plt.show()
 
 
     def plot_shear_force(self):
+        self.get_plot_titletext()
         for i in range(self.n_steps):
             plt.plot(self.Rt_Knee_Jt_Force_Y[int(self.RON[i]):int(self.ROFF[i])], label='Step ' + str(i))
             plt.grid(True)
-            plt.title('Subject ' + str(self.subject) + ' ' + self.incline + ' ' + str(self.speed) + ' Rt Knee Shear Force')
+            plt.title('Subject ' + str(self.subject) + ' ' + self.shoe_str + self.incline_str + ' ' + self.speed_str + ' Rt Knee Shear Force')
             plt.legend()
         plt.show()
 
 
     def plot_joint_moment(self):
+        self.get_plot_titletext()
         for i in range(self.n_steps):
             plt.plot(self.Rt_Knee_Jt_Moment_Y[int(self.RON[i]):int(self.ROFF[i])], label='Step ' + str(i))
             plt.grid(True)
-            plt.title('Subject ' + str(self.subject) + ' ' + self.incline + ' ' + str(self.speed) + ' Rt Knee Adduction Moment')
+            plt.title('Subject ' + str(self.subject) + ' ' + self.shoe_str + self.incline_str + ' ' + self.speed_str  + ' Rt Knee Adduction Moment')
             plt.legend()
         plt.show()
 
@@ -237,11 +266,10 @@ class Biomechanics:
             self.hip_ron[i] = self.R_HIP_Jt_Angle_X[self.RON[i]]
             self.knee_ron[i] = self.Rt_Knee_Jt_Angle_X[self.RON[i]]
             self.knee_flex_range[i] = self.Rt_Knee_Jt_Angle_X[self.peak_comp_pt[i]] - self.knee_ron[i] - self.hip_ron[i]
+
+
+    def save_stats_long(self):
         stat_file_path = 'D:/Alexis_Stats/'
-        self.save_stats_long(stat_file_path)
-
-
-    def save_stats_long(self, stat_file_path):
         fn = stat_file_path + 'Alexis_Stats.csv'
         with open(fn, 'a') as stat_file:
             stat_file.write('subject, shoe,speed, incline, step, comp_force,comp_impulse,shear_force,shear_impulse,add_mom, add_impulse, trail_prop, lead_braking, hip_ron, knee_ron\n')
