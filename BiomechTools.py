@@ -3,6 +3,7 @@ import numpy as np
 import math
 import matplotlib.pyplot as plt
 
+
 def next_power_of_two(n_points):
     """ returns the next power of 2 for FFT, n_points is n the number of points. If n_points is 10, the function
     returns 16.
@@ -25,6 +26,25 @@ def max_min(curve, first_pt, last_pt):
             max_location = i
 
     return max, min, max_location, min_location
+
+
+def get_min_value(curve, first_pt, last_pt):
+    min_value = curve[first_pt]
+    min_pt = first_pt
+    for i in range(first_pt, last_pt):
+        if curve[i] < min_value:
+            min_value = curve[i]
+            min_pt = i
+    return min_value, min_pt
+
+def get_max_value(curve, first_pt, last_pt):
+    max_value = curve[first_pt]
+    max_pt = first_pt
+    for i in range(first_pt, last_pt):
+        if curve[i] > max_value:
+            max_value = curve[i]
+            max_pt = i
+    return max_value, max_pt
 
 
 def simpson_nonuniform(x: Sequence[float], f: Sequence[float]) -> float:
@@ -456,6 +476,7 @@ def critically_damped(raw, sampling_rate, filter_cutoff):
     for i in range((n + 1), -1, -1):
         prime[i] = a0 * temp[i] + a1 * temp[i + 1] + a2 * \
                    temp[i + 2] + b1 * prime[i + 1] + b2 * prime[i + 2]
+
 
     # --------------------------------------------------------------
     #                           Pass 5
