@@ -11,6 +11,9 @@ hoka_level = hoka[hoka["incline"] == 0]
 hoka_uphill = hoka[hoka["incline"] == 1]
 hoka_downhill = hoka[hoka["incline"] == 2]
 barefoot = all_data[all_data["shoe"] == 1]
+barefoot_level = barefoot[barefoot["incline"] == 0]
+barefoot_uphill = barefoot[barefoot["incline"] == 1]
+barefoot_downhill = barefoot[barefoot["incline"] == 2]
 print(hoka.head())
 
 #--------------------------   Hoka  Uphill  -----------------------------
