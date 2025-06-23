@@ -84,7 +84,8 @@ class Biomechanics:
         self.Rt_Knee_Jt_Moment_X = data[:, 16]
         self.Rt_Knee_Jt_Moment_Y = data[:, 17]
         self.Rt_Knee_Jt_Moment_Z = data[:, 18]
-
+        # normalize adduction moment to % BW*ht
+        self.Rt_Knee_Jt_Moment_Y = 100.0 * self.Rt_Knee_Jt_Moment_Y / (self.mass * 9.8 * self.height)
         # smooth Forces at 20 Hz
         self.FP1_X = critically_damped(self.FP1_X, 1000, 20)
         self.FP1_Y = critically_damped(self.FP1_Y, 1000, 20)
@@ -271,7 +272,7 @@ class Biomechanics:
         stat_file_path = 'D:/Alexis_Stats/'
         fn = stat_file_path + 'Alexis_Stats.csv'
         with open(fn, 'a') as stat_file:
-            stat_file.write('subject, shoe,speed, incline, step, comp_force,comp_impulse,shear_force,shear_impulse,add_mom, add_impulse, trail_prop, lead_braking, hip_ron, knee_ron\n')
+            #stat_file.write('subject, shoe,speed, incline, step, comp_force,comp_impulse,shear_force,shear_impulse,add_mom, add_impulse, trail_prop, lead_braking, hip_ron, knee_ron\n')
             for step in range(self.n_steps):
                 stat_file.write(
                     str(self.subject) + ',' + str(self.shoe)  + ',' + str(self.speed) + ',' + str(self.incline) + ',' + str(step) + ',' + str(self.peak_comp[step]) + ',' + str(self.comp_impulse[step]) + ',' + str(self.peak_shear[step]) + ',' + str(self.shear_impulse[step]) + ',' + str(self.peak_add[step]) + ',' + str(self.add_impulse[step]) + ',' + str(self.trail_leg_prop[step]) + ',' + str(self.lead_leg_braking[step]) + ',' + str(self.hip_ron[step]) + ',' + str(self.knee_ron[step]) + '\n')
