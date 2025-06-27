@@ -85,6 +85,7 @@ class Biomechanics:
         self.Rt_Knee_Jt_Moment_Y = data[:, 17]
         self.Rt_Knee_Jt_Moment_Z = data[:, 18]
         # normalize adduction moment to % BW*ht
+        self.Rt_Knee_Jt_Moment_X = 100.0 * self.Rt_Knee_Jt_Moment_X / (self.mass * 9.8 * self.height)
         self.Rt_Knee_Jt_Moment_Y = 100.0 * self.Rt_Knee_Jt_Moment_Y / (self.mass * 9.8 * self.height)
         # smooth Forces at 20 Hz
         self.FP1_X = critically_damped(self.FP1_X, 1000, 20)
@@ -216,6 +217,14 @@ class Biomechanics:
             plt.legend()
         plt.show()
 
+    def plot_knee_extension_moment(self):
+        self.get_plot_titletext()
+        for i in range(self.n_steps):
+            plt.plot(self.Rt_Knee_Jt_Moment_X[int(self.RON[i]):int(self.ROFF[i])], label='Step ' + str(i))
+            plt.grid(True)
+            plt.title('Subject ' + str(self.subject) + ' ' + self.shoe_str + self.incline_str + ' ' + self.speed_str  + ' Rt Knee Extension Moment')
+            plt.legend()
+        plt.show()
 
     def plot_joint_moment(self):
         self.get_plot_titletext()

@@ -6,14 +6,21 @@ from Biomechanics import Biomechanics
 mass = 73.482
 height = 1.64592
 subject = 8
+
 #  --------------------------------------------------------------
 path = 'D:/Alexis_Subject_' + str(subject) + '/S' + str(subject) + ' Data/'
 fn = 'D:/Alexis_Subject_8/S8 Data/S8 Neutral 12.txt'
+s_7 = Biomechanics(fn, subject, mass, height, speed=2, incline=0, shoe=0)
+s_7.get_stance()
+s_7.plot_knee_extension_moment()
+s_7.analyze_joint_force()
+#s_7.save_a_step(10)
 #subj = Biomechanics(fn, subject, mass, height, speed=2, incline=0, shoe=1)
 #subj.get_stance()
 #subj.analyze_joint_force()
 #subj.plot_joint_moment()
 #subj.save_a_step(10)
+"""
 for speed in range(3):
     for incline in range(3):
         for shoe in range(2): #  range(0, 1) Hoka, range(1, 2) barefoot
@@ -40,20 +47,21 @@ for speed in range(3):
             subj = Biomechanics(fn, subject, mass, height, speed, incline, shoe)
             subj.get_stance()
             subj.analyze_joint_force()
+            subj.plot_knee_extension_moment()
             subj.plot_shear_force()
             subj.plot_joint_force()
             subj.plot_joint_moment()
             subj.save_stats_long()
 
 
-"""
+
 
 fn = 'D:/Alexis_Subject_' + str(subject) + '/S' + str(subject) + ' Data/'
 s_7 = Biomechanics(fn, subject, mass, height, speed=0, incline=0, shoe=0)
 s_7.get_stance()
 
 s_7.analyze_joint_force()
-#s_7.save_a_step(0)
+#s_7.save_a_step(10)
 #s_7.plot_right_fy()
 #s_7.plot_shear_force()
 #s_27_n_08.plot_fz_steps()
