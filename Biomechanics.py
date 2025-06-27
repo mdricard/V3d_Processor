@@ -258,9 +258,11 @@ class Biomechanics:
         d = self.FP2_Z[self.LON[step] : self.ROFF[step]]
         e = self.Rt_Knee_Jt_Force_Y[self.LON[step] : self.ROFF[step]]
         f = self.Rt_Knee_Jt_Force_Z[self.LON[step] : self.ROFF[step]]
-        g = self.Rt_Knee_Jt_Moment_Y[self.LON[step]: self.ROFF[step]]
+        g = self.Rt_Knee_Jt_Moment_X[self.LON[step]: self.ROFF[step]]
+        h = self.Rt_Knee_Jt_Moment_Y[self.LON[step]: self.ROFF[step]]
+        i = self.Rt_Knee_Jt_Angle_X[self.LON[step]: self.ROFF[step]]
 
-        np.savetxt(f_step_name, np.column_stack((a, b, c, d, e, f, g)),  fmt='%.6f', delimiter=',', newline='\n', header="fp1 Y, fp1 Z, fp2 Y, fp2 Z, Rt Knee Force Y, Rt Knee Force Z, Rt Knee Adduction Moment Y", comments="")
+        np.savetxt(f_step_name, np.column_stack((a, b, c, d, e, f, g, h, i)),  fmt='%.6f', delimiter=',', newline='\n', header="fp1 Y, fp1 Z, fp2 Y, fp2 Z, Rt Knee Force Y, Rt Knee Force Z, Rt Knee Adduction Moment X, Rt Knee Adduction Moment Y, Rt Knee Jnt Angle", comments="")
 
 
     def analyze_joint_force(self):
