@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from math import degrees, asin
 from BiomechTools import low_pass, zero_crossing, max_min, simpsons_rule, critically_damped, residual_analysis, get_max_value, get_min_value
+from math import radians
 
 class Biomechanics:
     RON = np.zeros(60, dtype=int)
@@ -84,9 +85,11 @@ class Biomechanics:
         self.Rt_Knee_Jt_Moment_X = data[:, 16]
         self.Rt_Knee_Jt_Moment_Y = data[:, 17]
         self.Rt_Knee_Jt_Moment_Z = data[:, 18]
-        # normalize adduction moment to % BW*ht
+        # normalize Flex-Ext & adduction moment to % BW*ht
         self.Rt_Knee_Jt_Moment_X = 100.0 * self.Rt_Knee_Jt_Moment_X / (self.mass * 9.8 * self.height)
         self.Rt_Knee_Jt_Moment_Y = 100.0 * self.Rt_Knee_Jt_Moment_Y / (self.mass * 9.8 * self.height)
+        self.Rt_Knee_Jt_Vel = np.zeros(self.n_rows)
+        self.Rt_Knee_Jt_Power = np.zeros(self.n_rows)
         # smooth Forces at 20 Hz
         self.FP1_X = critically_damped(self.FP1_X, 1000, 20)
         self.FP1_Y = critically_damped(self.FP1_Y, 1000, 20)
@@ -95,6 +98,8 @@ class Biomechanics:
         self.FP2_Y = critically_damped(self.FP2_Y, 1000, 20)
         self.FP2_Z = critically_damped(self.FP2_Z, 1000, 20)
 
+        self.compute_joint_velocity()
+        self.compute_joint_power()
         #for i in range(1, self.n_cols):
         #    print(self.var_name[i])
         #self.n_steps = int(
@@ -139,6 +144,15 @@ class Biomechanics:
             while self.FP2_Y[k] < 0.0 and k < self.ROFF[step]:
                 k = k + 1
             self.RMID[step] = k
+
+    def compute_joint_velocity(self):
+        for i in range(2, self.n_rows-2):
+            self.Rt_Knee_Jt_Vel[i] = (self.Rt_Knee_Jt_Angle_X[i+1] - self.Rt_Knee_Jt_Angle_X[i-1]) / (2 * .001)
+            self.Rt_Knee_Jt_Vel[i] = radians(self.Rt_Knee_Jt_Vel[i])
+
+    def compute_joint_power(self):
+        for i in range(2, self.n_rows-2):
+            self.Rt_Knee_Jt_Power[i] = self.Rt_Knee_Jt_Moment_X[i] * self.Rt_Knee_Jt_Power[i]
 
     def plot_first_step(self):
         plt.plot(self.FP2_Z[Lf[0]:Rt[1]], 'r', label='FP2 Z')
