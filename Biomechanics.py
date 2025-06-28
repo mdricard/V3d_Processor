@@ -152,7 +152,7 @@ class Biomechanics:
 
     def compute_joint_power(self):
         for i in range(2, self.n_rows-2):
-            self.Rt_Knee_Jt_Power[i] = self.Rt_Knee_Jt_Moment_X[i] * self.Rt_Knee_Jt_Power[i]
+            self.Rt_Knee_Jt_Power[i] = self.Rt_Knee_Jt_Moment_X[i] * self.Rt_Knee_Jt_Vel[i]
 
     def plot_first_step(self):
         plt.plot(self.FP2_Z[Lf[0]:Rt[1]], 'r', label='FP2 Z')
@@ -275,8 +275,10 @@ class Biomechanics:
         g = self.Rt_Knee_Jt_Moment_X[self.LON[step]: self.ROFF[step]]
         h = self.Rt_Knee_Jt_Moment_Y[self.LON[step]: self.ROFF[step]]
         i = self.Rt_Knee_Jt_Angle_X[self.LON[step]: self.ROFF[step]]
+        j = self.Rt_Knee_Jt_Vel[self.LON[step]: self.ROFF[step]]
+        k = self.Rt_Knee_Jt_Power[self.LON[step]: self.ROFF[step]]
 
-        np.savetxt(f_step_name, np.column_stack((a, b, c, d, e, f, g, h, i)),  fmt='%.6f', delimiter=',', newline='\n', header="fp1 Y, fp1 Z, fp2 Y, fp2 Z, Rt Knee Force Y, Rt Knee Force Z, Rt Knee Adduction Moment X, Rt Knee Adduction Moment Y, Rt Knee Jnt Angle", comments="")
+        np.savetxt(f_step_name, np.column_stack((a, b, c, d, e, f, g, h, i, j, k)),  fmt='%.6f', delimiter=',', newline='\n', header="fp1 Y, fp1 Z, fp2 Y, fp2 Z, Rt Knee Force Y, Rt Knee Force Z, Rt Knee FlxExt Moment X, Rt Knee Adduction Moment Y, Rt Knee Jnt Angle, Rt Knee Jnt Ang Vel, Rt Knee Jnt Power", comments="")
 
 
     def analyze_joint_force(self):
