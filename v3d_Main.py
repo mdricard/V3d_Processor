@@ -9,7 +9,7 @@ subject = 8
 
 #  --------------------------------------------------------------
 path = 'D:/Alexis_Subject_' + str(subject) + '/S' + str(subject) + ' Data/'
-fn = 'D:/Alexis_Subject_8/S8 Data/S8 Neutral 12.txt'
+fn = 'D:/Alexis_Subject_8/S8 Data/S8 HK UH 12.txt'
 s_7 = Biomechanics(fn, subject, mass, height, speed=2, incline=0, shoe=0)
 s_7.get_stance()
 s_7.analyze_joint_force()

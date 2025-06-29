@@ -82,7 +82,7 @@ class Biomechanics:
         self.Rt_Knee_Jt_Force_X = data[:, 13] / (self.mass * 9.8)     # convert to BW
         self.Rt_Knee_Jt_Force_Y = data[:, 14] / (self.mass * 9.8)     # convert to BW
         self.Rt_Knee_Jt_Force_Z = data[:, 15] / (self.mass * 9.8)     # convert to BW
-        self.Rt_Knee_Jt_Moment_X = data[:, 16]
+        self.Rt_Knee_Jt_Moment_X = -1.0 * data[:, 16]   # Positive is Extension, Negative if Flexion
         self.Rt_Knee_Jt_Moment_Y = data[:, 17]
         self.Rt_Knee_Jt_Moment_Z = data[:, 18]
         # normalize Flex-Ext & adduction moment to % BW*ht
