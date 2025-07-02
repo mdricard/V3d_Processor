@@ -249,6 +249,15 @@ class Biomechanics:
             plt.legend()
         plt.show()
 
+    def plot_joint_power(self):
+        self.get_plot_titletext()
+        for i in range(self.n_steps):
+            plt.plot(self.Rt_Knee_Jt_Moment_Y[int(self.RON[i]):int(self.ROFF[i])], label='Step ' + str(i))
+            plt.grid(True)
+            plt.title('Subject ' + str(self.subject) + ' ' + self.shoe_str + self.incline_str + ' ' + self.speed_str  + ' Joint Power')
+            plt.legend()
+        plt.show()
+
     def plot_joint_angle(self):
         for i in range(self.n_steps):
             plt.plot(self.Rt_Knee_Jt_Angle_X[self.RON[i]:self.ROFF[i]], label='Step ' + str(i))
