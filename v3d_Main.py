@@ -13,6 +13,8 @@ fn = 'D:/Alexis_Subject_8/S8 Data/S8 HK Neutral 12.txt'
 s_7 = Biomechanics(fn, subject, mass, height, speed=2, incline=0, shoe=0)
 s_7.get_stance()
 s_7.analyze_joint_force()
+s_7.compute_loading_rate()
+s_7.plot_fz_steps()
 s_7.plot_medial_contact_force()
 #s_7.analyze_joint_power()
 s_7.plot_joint_power()

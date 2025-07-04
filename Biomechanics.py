@@ -36,6 +36,7 @@ class Biomechanics:
     knee_flex_range = np.zeros(60)
     con_work  = np.zeros(60)
     ecc_work = np.zeros(60)
+    loading_rate = np.zeros(60) # Munro Miller 50 N to BW + 50 N
     n_reps = 0
     subject = ''
     mass = 0
@@ -168,6 +169,19 @@ class Biomechanics:
         plt.grid(True)
         plt.legend()
         plt.show()
+
+    def compute_loading_rate(self):    # Munro Miller def of Loading Rate
+        for i in range(self.n_steps):
+            pt = self.RON[i]
+            while (self.FP2_Z[pt] < 50.0):
+                pt += 1
+            pt_50_N = pt
+            pt += 20
+            while (self.FP2_Z[pt] < ((self.mass * 9.8) + 50.0)):
+                pt += 1
+            pt_BW_50 = pt
+            self.loading_rate[i] = 1.0 / ((pt_BW_50 - pt_50_N) * .001)
+
 
     def plot_fz_steps(self):
         for i in range(self.n_steps):
