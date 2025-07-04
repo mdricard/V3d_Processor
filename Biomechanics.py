@@ -102,9 +102,7 @@ class Biomechanics:
         self.FP2_Y = critically_damped(self.FP2_Y, 1000, 20)
         self.FP2_Z = critically_damped(self.FP2_Z, 1000, 20)
 
-        self.compute_joint_velocity()
-        self.compute_joint_power()
-        self.compute_medial_contact_force()
+
         #for i in range(1, self.n_cols):
         #    print(self.var_name[i])
         #self.n_steps = int(
@@ -307,6 +305,7 @@ class Biomechanics:
     def save_a_step(self, step):
         f_step_name = 'd:/step_' + str(step) + '.csv'
         a = self.FP1_Y[self.LON[step] : self.ROFF[step]]
+        pt = np.arange(self.LON[step], self.ROFF[step])
         b = self.FP1_Z[self.LON[step] : self.ROFF[step]]
         c = self.FP2_Y[self.LON[step] : self.ROFF[step]]
         d = self.FP2_Z[self.LON[step] : self.ROFF[step]]
@@ -318,9 +317,30 @@ class Biomechanics:
         j = self.Rt_Knee_Jt_Vel[self.LON[step]: self.ROFF[step]]
         k = self.Rt_Knee_Jt_Power[self.LON[step]: self.ROFF[step]]
 
-        np.savetxt(f_step_name, np.column_stack((a, b, c, d, e, f, g, h, i, j, k)),  fmt='%.6f', delimiter=',', newline='\n', header="fp1 Y, fp1 Z, fp2 Y, fp2 Z, Rt Knee Force Y, Rt Knee Force Z, Rt Knee FlxExt Moment X, Rt Knee Adduction Moment Y, Rt Knee Jnt Angle, Rt Knee Jnt Ang Vel, Rt Knee Jnt Power", comments="")
+        np.savetxt(f_step_name, np.column_stack((pt, a, b, c, d, e, f, g, h, i, j, k)),  fmt='%.6f', delimiter=',', newline='\n', header="pt, fp1 Y, fp1 Z, fp2 Y, fp2 Z, Rt Knee Force Y, Rt Knee Force Z, Rt Knee FlxExt Moment X, Rt Knee Adduction Moment Y, Rt Knee Jnt Angle, Rt Knee Jnt Ang Vel, Rt Knee Jnt Power", comments="")
 
-
+    def analyze_joint_power(self):
+        for step in range(self.n_steps):
+            xpts, rf = zero_crossing(self.Rt_Knee_Jt_Power, 0.0, self.RON[step], self.ROFF[step])
+            n_pts = len(xpts)
+            con_sum = 0.0
+            ecc_sum = 0.0
+            if rf[0] == "rising":
+                ecc_sum = simpsons_rule(self.Rt_Knee_Jt_Power, self.RON[0], xpts[0], .001)
+            else:
+                con_sum = simpsons_rule(self.Rt_Knee_Jt_Power, self.RON[0], xpts[0], .001)
+            for p in range(1, n_pts):
+                if rf[p] == "rising":
+                    ecc_sum += simpsons_rule(self.Rt_Knee_Jt_Power, xpts[p-1], xpts[p], .001)
+                else:
+                    con_sum += simpsons_rule(self.Rt_Knee_Jt_Power, xpts[p-1], xpts[p], .001)
+            # get the last segment to ROFF
+            if rf[n_pts-1] == "falling":
+                ecc_sum += simpsons_rule(self.Rt_Knee_Jt_Power, xpts[p], self.ROFF[step], .001)
+            else:
+                con_sum = simpsons_rule(self.Rt_Knee_Jt_Power, xpts[p - 1], self.ROFF[step], .001)
+            self.con_work[step] = con_sum
+            self.ecc_work[step] = ecc_sum
 
     def analyze_joint_force(self):
         for i in range(self.n_steps):
@@ -341,23 +361,13 @@ class Biomechanics:
         stat_file_path = 'D:/Alexis_Stats/'
         fn = stat_file_path + 'Alexis_Stats.csv'
         with open(fn, 'a') as stat_file:
-            #stat_file.write('subject, shoe,speed, incline, step, comp_force,comp_impulse,shear_force,shear_impulse,add_mom, add_impulse, trail_prop, lead_braking, hip_ron, knee_ron\n')
+            #stat_file.write('subject, shoe,speed, incline, step, comp_force,loading_rate,comp_impulse,shear_force,shear_impulse,add_mom, add_impulse, trail_prop, lead_braking, con_work, ecc_work, hip_ron, knee_ron\n')
             for step in range(self.n_steps):
                 stat_file.write(
-                    str(self.subject) + ',' + str(self.shoe)  + ',' + str(self.speed) + ',' + str(self.incline) + ',' + str(step) + ',' + str(self.peak_comp[step]) + ',' + str(self.comp_impulse[step]) + ',' + str(self.peak_shear[step]) + ',' + str(self.shear_impulse[step]) + ',' + str(self.peak_add[step]) + ',' + str(self.add_impulse[step]) + ',' + str(self.trail_leg_prop[step]) + ',' + str(self.lead_leg_braking[step]) + ',' + str(self.hip_ron[step]) + ',' + str(self.knee_ron[step]) + '\n')
+                    str(self.subject) + ',' + str(self.shoe)  + ',' + str(self.speed) + ',' + str(self.incline) + ',' + str(step) + ',' + str(self.peak_comp[step]) + ',' + str(self.loading_rate[step]) + ',' + str(self.comp_impulse[step]) + ',' + str(self.peak_shear[step]) + ',' + str(self.shear_impulse[step]) + ',' + str(self.peak_add[step]) + ',' + str(self.add_impulse[step]) + ',' + str(self.trail_leg_prop[step]) + ',' + str(self.lead_leg_braking[step]) + ',' + str(self.con_work[step])  + ',' + str(self.ecc_work[step]) + ',' + str(self.hip_ron[step]) + ',' + str(self.knee_ron[step]) + '\n')
         stat_file.close()
         print('Stats saved to ' + fn)
 
 """
-    def analyze_joint_power(self):
-        for i in range(self.n_steps):
-            xpts, rf = zero_crossing(self.Rt_Knee_Jt_Power, 0.0, self.RON[i], self.ROFF[i])
-            n_pts = len(xpts)
-            con_sum = 0.0
-            ecc_sum = 0.0
-            for p in range(n_pts):
-                if rf[p] == "rising"
-                    con_sum += simpsons_rule(self.Rt_Knee_Jt_Power)
-            print(rf)
-            print(xpts)
+
 """
