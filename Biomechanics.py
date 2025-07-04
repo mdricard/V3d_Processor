@@ -316,12 +316,32 @@ class Biomechanics:
         i = self.Rt_Knee_Jt_Angle_X[self.LON[step]: self.ROFF[step]]
         j = self.Rt_Knee_Jt_Vel[self.LON[step]: self.ROFF[step]]
         k = self.Rt_Knee_Jt_Power[self.LON[step]: self.ROFF[step]]
-
         np.savetxt(f_step_name, np.column_stack((pt, a, b, c, d, e, f, g, h, i, j, k)),  fmt='%.6f', delimiter=',', newline='\n', header="pt, fp1 Y, fp1 Z, fp2 Y, fp2 Z, Rt Knee Force Y, Rt Knee Force Z, Rt Knee FlxExt Moment X, Rt Knee Adduction Moment Y, Rt Knee Jnt Angle, Rt Knee Jnt Ang Vel, Rt Knee Jnt Power", comments="")
+
+    def save_all_steps(self):
+        """
+        Saves RON to ROFF of all steps in a condition
+        """
+        for step in range(self.n_steps):
+            f_step_name = 'd:/All_Steps/step_' + str(step) + '.csv'
+            tm = np.arange(int(self.ROFF[step]) - int(self.RON[step]) + 1)
+            pt = np.arange(self.RON[step], self.ROFF[step])
+            a = self.FP1_Y[self.RON[step] : self.ROFF[step]]
+            b = self.FP1_Z[self.RON[step] : self.ROFF[step]]
+            c = self.FP2_Y[self.RON[step] : self.ROFF[step]]
+            d = self.FP2_Z[self.RON[step] : self.ROFF[step]]
+            e = self.Rt_Knee_Jt_Force_Y[self.RON[step] : self.ROFF[step]]
+            f = self.Rt_Knee_Jt_Force_Z[self.RON[step] : self.ROFF[step]]
+            g = self.Rt_Knee_Jt_Moment_X[self.RON[step]: self.ROFF[step]]
+            h = self.Rt_Knee_Jt_Moment_Y[self.RON[step]: self.ROFF[step]]
+            i = self.Rt_Knee_Jt_Angle_X[self.RON[step]: self.ROFF[step]]
+            j = self.Rt_Knee_Jt_Vel[self.RON[step]: self.ROFF[step]]
+            k = self.Rt_Knee_Jt_Power[self.RON[step]: self.ROFF[step]]
+            np.savetxt(f_step_name, np.column_stack((tm, pt, a, b, c, d, e, f, g, h, i, j, k)),  fmt='%.6f', delimiter=',', newline='\n', header="Time, pt, fp1 Y, fp1 Z, fp2 Y, fp2 Z, Rt Knee Force Y, Rt Knee Force Z, Rt Knee FlxExt Moment X, Rt Knee Adduction Moment Y, Rt Knee Jnt Angle, Rt Knee Jnt Ang Vel, Rt Knee Jnt Power", comments="")
 
     def analyze_joint_power(self):
         for step in range(self.n_steps):
-            xpts, rf = zero_crossing(self.Rt_Knee_Jt_Power, 0.0, self.RON[step], self.ROFF[step])
+            xpts, rf = zero_crossing(self.Rt_Knee_Jt_Power, 0.0, int(self.RON[step]), int(self.ROFF[step]))
             n_pts = len(xpts)
             con_sum = 0.0
             ecc_sum = 0.0
