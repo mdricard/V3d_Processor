@@ -34,6 +34,8 @@ class Biomechanics:
     hip_ron = np.zeros(60)
     knee_ron = np.zeros(60)
     knee_flex_range = np.zeros(60)
+    con_work  = np.zeros(60)
+    ecc_work = np.zeros(60)
     n_reps = 0
     subject = ''
     mass = 0
@@ -90,6 +92,7 @@ class Biomechanics:
         self.Rt_Knee_Jt_Moment_Y = 100.0 * self.Rt_Knee_Jt_Moment_Y / (self.mass * 9.8 * self.height)
         self.Rt_Knee_Jt_Vel = np.zeros(self.n_rows)
         self.Rt_Knee_Jt_Power = np.zeros(self.n_rows)
+        self.medial_contact_force = np.zeros(self.n_rows)
         # smooth Forces at 20 Hz
         self.FP1_X = critically_damped(self.FP1_X, 1000, 20)
         self.FP1_Y = critically_damped(self.FP1_Y, 1000, 20)
@@ -100,6 +103,7 @@ class Biomechanics:
 
         self.compute_joint_velocity()
         self.compute_joint_power()
+        self.compute_medial_contact_force()
         #for i in range(1, self.n_cols):
         #    print(self.var_name[i])
         #self.n_steps = int(
@@ -144,6 +148,10 @@ class Biomechanics:
             while self.FP2_Y[k] < 0.0 and k < self.ROFF[step]:
                 k = k + 1
             self.RMID[step] = k
+
+    def compute_medial_contact_force(self):
+        for i in range(2, self.n_rows - 2):
+            self.medial_contact_force[i] = .834 + (-.34 * self.Rt_Knee_Jt_Moment_Y[i]) + (.127 * self.Rt_Knee_Jt_Moment_X[i])  # Manal Ost & Cart (2015)
 
     def compute_joint_velocity(self):
         for i in range(2, self.n_rows-2):
@@ -258,6 +266,15 @@ class Biomechanics:
             plt.legend()
         plt.show()
 
+    def plot_medial_contact_force(self):
+        self.get_plot_titletext()
+        for i in range(self.n_steps):
+            plt.plot(self.medial_contact_force[int(self.RON[i]):int(self.ROFF[i])], label='Step ' + str(i))
+            plt.grid(True)
+            plt.title('Subject ' + str(self.subject) + ' ' + self.shoe_str + self.incline_str + ' ' + self.speed_str  + ' Manal Medial Contact Force')
+            plt.legend()
+        plt.show()
+
     def plot_joint_angle(self):
         for i in range(self.n_steps):
             plt.plot(self.Rt_Knee_Jt_Angle_X[self.RON[i]:self.ROFF[i]], label='Step ' + str(i))
@@ -290,6 +307,7 @@ class Biomechanics:
         np.savetxt(f_step_name, np.column_stack((a, b, c, d, e, f, g, h, i, j, k)),  fmt='%.6f', delimiter=',', newline='\n', header="fp1 Y, fp1 Z, fp2 Y, fp2 Z, Rt Knee Force Y, Rt Knee Force Z, Rt Knee FlxExt Moment X, Rt Knee Adduction Moment Y, Rt Knee Jnt Angle, Rt Knee Jnt Ang Vel, Rt Knee Jnt Power", comments="")
 
 
+
     def analyze_joint_force(self):
         for i in range(self.n_steps):
             self.peak_comp[i], self.peak_comp_pt[i] = get_min_value(self.Rt_Knee_Jt_Force_Z, self.RON[i], self.RMID[i])
@@ -304,6 +322,7 @@ class Biomechanics:
             self.knee_ron[i] = self.Rt_Knee_Jt_Angle_X[self.RON[i]]
             self.knee_flex_range[i] = self.Rt_Knee_Jt_Angle_X[self.peak_comp_pt[i]] - self.knee_ron[i] - self.hip_ron[i]
 
+
     def save_stats_long(self):
         stat_file_path = 'D:/Alexis_Stats/'
         fn = stat_file_path + 'Alexis_Stats.csv'
@@ -314,3 +333,17 @@ class Biomechanics:
                     str(self.subject) + ',' + str(self.shoe)  + ',' + str(self.speed) + ',' + str(self.incline) + ',' + str(step) + ',' + str(self.peak_comp[step]) + ',' + str(self.comp_impulse[step]) + ',' + str(self.peak_shear[step]) + ',' + str(self.shear_impulse[step]) + ',' + str(self.peak_add[step]) + ',' + str(self.add_impulse[step]) + ',' + str(self.trail_leg_prop[step]) + ',' + str(self.lead_leg_braking[step]) + ',' + str(self.hip_ron[step]) + ',' + str(self.knee_ron[step]) + '\n')
         stat_file.close()
         print('Stats saved to ' + fn)
+
+"""
+    def analyze_joint_power(self):
+        for i in range(self.n_steps):
+            xpts, rf = zero_crossing(self.Rt_Knee_Jt_Power, 0.0, self.RON[i], self.ROFF[i])
+            n_pts = len(xpts)
+            con_sum = 0.0
+            ecc_sum = 0.0
+            for p in range(n_pts):
+                if rf[p] == "rising"
+                    con_sum += simpsons_rule(self.Rt_Knee_Jt_Power)
+            print(rf)
+            print(xpts)
+"""
