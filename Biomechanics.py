@@ -29,6 +29,8 @@ class Biomechanics:
     peak_add = np.zeros(60)
     peak_add_pt = np.zeros(60, dtype=int)
     add_impulse = np.zeros(60)
+    peak_med_knee = np.zeros(60)     # Manal Ost & Cart (2015) .834 -.34 * Jt_Moment_Y[i] + .127 * Jt_Moment_X[i]
+    peak_med_knee_pt = np.zeros(60, dtype=int)
     trail_leg_prop = np.zeros(60)
     lead_leg_braking = np.zeros(60)
     hip_ron = np.zeros(60)
@@ -324,7 +326,7 @@ class Biomechanics:
         """
         for step in range(self.n_steps):
             f_step_name = 'd:/All_Steps/step_' + str(step) + '.csv'
-            tm = np.arange(int(self.ROFF[step]) - int(self.RON[step]) + 1)
+            tm = np.arange(int(self.ROFF[step]) - int(self.RON[step]))
             pt = np.arange(self.RON[step], self.ROFF[step])
             a = self.FP1_Y[self.RON[step] : self.ROFF[step]]
             b = self.FP1_Z[self.RON[step] : self.ROFF[step]]
@@ -346,9 +348,9 @@ class Biomechanics:
             con_sum = 0.0
             ecc_sum = 0.0
             if rf[0] == "rising":
-                ecc_sum = simpsons_rule(self.Rt_Knee_Jt_Power, self.RON[0], xpts[0], .001)
+                ecc_sum = simpsons_rule(self.Rt_Knee_Jt_Power, self.RON[step], xpts[0], .001)
             else:
-                con_sum = simpsons_rule(self.Rt_Knee_Jt_Power, self.RON[0], xpts[0], .001)
+                con_sum = simpsons_rule(self.Rt_Knee_Jt_Power, self.RON[step], xpts[0], .001)
             for p in range(1, n_pts):
                 if rf[p] == "rising":
                     ecc_sum += simpsons_rule(self.Rt_Knee_Jt_Power, xpts[p-1], xpts[p], .001)
@@ -361,6 +363,7 @@ class Biomechanics:
                 con_sum = simpsons_rule(self.Rt_Knee_Jt_Power, xpts[p - 1], self.ROFF[step], .001)
             self.con_work[step] = con_sum
             self.ecc_work[step] = ecc_sum
+            #print(step, self.con_work[step], self.ecc_work[step])
 
     def analyze_joint_force(self):
         for i in range(self.n_steps):
@@ -369,6 +372,7 @@ class Biomechanics:
             self.peak_add[i], self.peak_add_pt[i] = get_min_value(self.Rt_Knee_Jt_Moment_Y, self.RON[i], self.RMID[i])
             self.add_impulse[i] = simpsons_rule(self.Rt_Knee_Jt_Moment_Y, self.RON[i], self.peak_add_pt[i], 0.001)
             self.peak_shear[i], self.peak_shear_pt[i] = get_max_value(self.Rt_Knee_Jt_Force_Y, self.RON[i], self.RMID[i])
+            self.peak_med_knee[i], peak_med_knee_pt = get_max_value(self.medial_contact_force, self.RON[i], self.ROFF[i])
             self.shear_impulse[i] = simpsons_rule(self.Rt_Knee_Jt_Force_Y, self.RON[i], self.peak_shear_pt[i], 1.0)
             self.trail_leg_prop[i] = simpsons_rule(self.FP1_Y, self.LMID[i], self.LOFF[i], 1.0)
             self.lead_leg_braking[i] = simpsons_rule(self.FP2_Y, self.RON[i], self.peak_comp_pt[i], 1.0)
@@ -377,14 +381,15 @@ class Biomechanics:
             self.knee_flex_range[i] = self.Rt_Knee_Jt_Angle_X[self.peak_comp_pt[i]] - self.knee_ron[i] - self.hip_ron[i]
 
 
+
     def save_stats_long(self):
         stat_file_path = 'D:/Alexis_Stats/'
         fn = stat_file_path + 'Alexis_Stats.csv'
         with open(fn, 'a') as stat_file:
-            #stat_file.write('subject, shoe,speed, incline, step, comp_force,loading_rate,comp_impulse,shear_force,shear_impulse,add_mom, add_impulse, trail_prop, lead_braking, con_work, ecc_work, hip_ron, knee_ron\n')
+            #stat_file.write('subject, shoe,speed, incline, step, comp_force,loading_rate,comp_impulse,peak_med_knee,shear_force,shear_impulse,add_mom, add_impulse, trail_prop, lead_braking, con_work, ecc_work, hip_ron, knee_ron\n')
             for step in range(self.n_steps):
                 stat_file.write(
-                    str(self.subject) + ',' + str(self.shoe)  + ',' + str(self.speed) + ',' + str(self.incline) + ',' + str(step) + ',' + str(self.peak_comp[step]) + ',' + str(self.loading_rate[step]) + ',' + str(self.comp_impulse[step]) + ',' + str(self.peak_shear[step]) + ',' + str(self.shear_impulse[step]) + ',' + str(self.peak_add[step]) + ',' + str(self.add_impulse[step]) + ',' + str(self.trail_leg_prop[step]) + ',' + str(self.lead_leg_braking[step]) + ',' + str(self.con_work[step])  + ',' + str(self.ecc_work[step]) + ',' + str(self.hip_ron[step]) + ',' + str(self.knee_ron[step]) + '\n')
+                    str(self.subject) + ',' + str(self.shoe)  + ',' + str(self.speed) + ',' + str(self.incline) + ',' + str(step) + ',' + str(self.peak_comp[step]) + ',' + str(self.loading_rate[step]) + ',' + str(self.comp_impulse[step]) + ',' + str(self.peak_med_knee[step])  + ',' + str(self.peak_shear[step]) + ',' + str(self.shear_impulse[step]) + ',' + str(self.peak_add[step]) + ',' + str(self.add_impulse[step]) + ',' + str(self.trail_leg_prop[step]) + ',' + str(self.lead_leg_braking[step]) + ',' + str(self.con_work[step])  + ',' + str(self.ecc_work[step]) + ',' + str(self.hip_ron[step]) + ',' + str(self.knee_ron[step]) + '\n')
         stat_file.close()
         print('Stats saved to ' + fn)
 
