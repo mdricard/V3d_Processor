@@ -171,16 +171,18 @@ class Biomechanics:
         plt.show()
 
     def compute_loading_rate(self):    # Munro Miller def of Loading Rate
-        for i in range(self.n_steps):
+        for i in range(self.n_steps):   # slope of 100 N to BW-100 N
             pt = self.RON[i]
-            while (self.FP2_Z[pt] < 50.0):
+            while (self.FP2_Z[pt] < 100.0):
                 pt += 1
-            pt_50_N = pt
+            pt_100_N = pt
+            force_100 = self.FP2_Z[pt]
             pt += 20
-            while (self.FP2_Z[pt] < ((self.mass * 9.8) + 50.0)):
+            while (self.FP2_Z[pt] < ((self.mass * 9.8) - 100.0)):
                 pt += 1
-            pt_BW_50 = pt
-            self.loading_rate[i] = 1.0 / ((pt_BW_50 - pt_50_N) * .001)
+            pt_BW_100 = pt
+            force_BW_100 = self.FP2_Z[pt]
+            self.loading_rate[i] = (force_BW_100 - force_100) / (self.mass * 9.8) / ((pt_BW_100 - pt_100_N) * .001)
 
 
     def plot_fz_steps(self):

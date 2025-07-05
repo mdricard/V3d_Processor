@@ -9,9 +9,10 @@ subject = 8
 
 #  --------------------------------------------------------------
 path = 'D:/Alexis_Subject_' + str(subject) + '/S' + str(subject) + ' Data/'
-fn = 'D:/Alexis_Subject_8/S8 Data/S8 HK UH 12.txt'
-s_7 = Biomechanics(fn, subject, mass, height, speed=2, incline=1, shoe=0)
+fn = 'D:/Alexis_Subject_8/S8 Data/S8 HK Neutral 08.txt'
+s_7 = Biomechanics(fn, subject, mass, height, speed=1, incline=0, shoe=0)
 s_7.get_stance()
+#s_7.plot_fz_steps()
 s_7.compute_joint_velocity()
 s_7.compute_joint_power()
 s_7.compute_medial_contact_force()
@@ -20,8 +21,8 @@ s_7.compute_loading_rate()
 #s_7.save_a_step(0)
 
 #s_7.analyze_joint_power()
-#s_7.plot_fz_steps()
-s_7.plot_medial_contact_force()
+
+#s_7.plot_medial_contact_force()
 s_7.analyze_joint_power()
 #s_7.save_all_steps()
 s_7.save_stats_long()
