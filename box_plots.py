@@ -3,13 +3,14 @@ import numpy as np
 import seaborn as sns
 import pandas as pd
 sns.set_theme(style="ticks", palette="Dark2")
-
 all_data = pd.read_csv('D:/Alexis_Stats/Alexis_Stats_4_subjects.csv',delimiter=',')
+#all_data = pd.read_csv('D:/Alexis_Stats/Alexis_Stats.csv',delimiter=',')
 #print(data.head())
 hoka = all_data[all_data["shoe"] == 0]
 hoka_level = hoka[hoka["incline"] == 0]
 hoka_uphill = hoka[hoka["incline"] == 1]
 hoka_downhill = hoka[hoka["incline"] == 2]
+print(hoka_downhill.head())
 barefoot = all_data[all_data["shoe"] == 1]
 barefoot_level = barefoot[barefoot["incline"] == 0]
 barefoot_uphill = barefoot[barefoot["incline"] == 1]
