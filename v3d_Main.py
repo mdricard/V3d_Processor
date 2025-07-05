@@ -9,8 +9,8 @@ subject = 8
 
 #  --------------------------------------------------------------
 path = 'D:/Alexis_Subject_' + str(subject) + '/S' + str(subject) + ' Data/'
-fn = 'D:/Alexis_Subject_8/S8 Data/S8 HK DH 12.txt'
-s_7 = Biomechanics(fn, subject, mass, height, speed=2, incline=2, shoe=0)
+fn = 'D:/Alexis_Subject_8/S8 Data/S8 DH 12.txt'
+s_7 = Biomechanics(fn, subject, mass, height, speed=2, incline=2, shoe=1)
 s_7.get_stance()
 #s_7.plot_fz_steps()
 s_7.compute_joint_velocity()

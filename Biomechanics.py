@@ -372,7 +372,7 @@ class Biomechanics:
                 ecc_sum += simpsons_rule(self.Rt_Knee_Jt_Power, self.RON[step], self.ROFF[step], .001)
             self.con_work[step] = con_sum
             self.ecc_work[step] = ecc_sum
-            print(step, self.con_work[step], self.ecc_work[step])
+            #print(step, self.con_work[step], self.ecc_work[step])
 
     def analyze_joint_force(self):
         for i in range(self.n_steps):
